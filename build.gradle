@@ -1,0 +1,98 @@
+def langs = ['java', 'groovy']
+langs.each {
+    apply plugin : it
+}
+apply plugin : 'idea'
+
+apply plugin : 'war'
+
+group = 'org.mikeneck.gae.slim3.sample'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+def appengineGroupId = 'com.google.appengine'
+def appengineVersion = '1.6.2'
+def slim3Version = '1.0.15'
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://www.seasar.org/maven/maven2'
+        }
+    }
+    dependencies {
+       classpath : "org.slim3:slim3:1.0.15".toString()
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://www.seasar.org/maven/maven2'
+    }
+}
+
+configurations {
+    genModels
+}
+
+def encoding = { it.encoding = 'UTF-8'}
+
+def makeStructure = {
+    def dir = []
+    sourceSets.each { src ->
+        langs.each { lang ->
+            dir << "src/${src.name}/${lang}"
+            dir << "src/${src.name}/${lang}/${project.properties.group.replace('.','/')}"
+        }
+        dir << "src/${src.name}/resources"
+    }
+    dir << "src/gen/java"
+    dir.each { 
+        println it
+        ant.mkdir(dir : it)
+    }
+}
+
+tasks.ideaModule {
+    doFirst makeStructure
+}
+
+tasks.withType (AbstractCompile).each {
+    encoding it.options
+}
+
+dependencies {
+    compile "${appengineGroupId}:appengine-tools-sdk:${appengineVersion}".toString()
+    compile "${appengineGroupId}:appengine-api-labs:${appengineVersion}".toString()
+    compile "${appengineGroupId}:appengine-api-1.0-sdk:${appengineVersion}".toString()
+    compile("org.slim3:slim3:${slim3Version}".toString()) {
+        exclude module: "${appengineGroupId}:appengine-api-1.0-sdk".toString()
+        exclude module: "${appengineGroupId}:appengine-api-labs".toString()
+    }
+    compile("org.slim3:slim3-gen:${slim3Version}".toString()) {
+        exclude module: 'org.apache.ant:ant'
+    }
+    genModels ("org.slim3:slim3-gen:${slim3Version}".toString())
+    testCompile "${appengineGroupId}:appengine-api-stubs:${appengineVersion}".toString()
+    testCompile "${appengineGroupId}:appengine-api-stubs:${appengineVersion}".toString()
+    testCompile "${appengineGroupId}:appengine-local-runtime:1.3.6".toString()
+    testCompile "${appengineGroupId}:appengine-testing:${appengineVersion}".toString()
+    testCompile('junit:junit-dep:4.10') {
+        exclude module: 'org.hamcrest:hamcrest-core'
+    }
+    testCompile 'org.hamcrest:hamcrest-library:1.2.1'
+}
+
+task gen << {
+    ant {
+        apt (srcdir : 'src/main/java',
+                destdir : 'src/main/gen',
+                classpath : configurations.genModels.asPath,
+                debug : 'on',
+                compile : true,
+                factory : 'org.slim3.gen.processor.ModelProcessorFactory')
+    }
+}
+
