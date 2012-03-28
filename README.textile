@@ -5,6 +5,7 @@ Almost all of the project of slim3 products is built with Maen2. But this projec
 
 h3. LICENSE
 
+<pre><code class="txt">
    Copyright mike_neck (twitter : @mike_neck / mike@mikeneck.org) 2012
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +19,7 @@ h3. LICENSE
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+</code></pre>
 
 h3. how to build
 
