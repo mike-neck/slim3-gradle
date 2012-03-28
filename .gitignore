@@ -1,0 +1,20 @@
+# for java
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# for idea
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# dor gradle
+.gradle
+target/
+
+
