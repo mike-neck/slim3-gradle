@@ -37,6 +37,10 @@ configurations {
     genModels
 }
 
+compileJava {
+    source = ['src/main/java', 'src/gen/java']
+}
+
 def encoding = { it.encoding = 'UTF-8'}
 
 def makeStructure = {
