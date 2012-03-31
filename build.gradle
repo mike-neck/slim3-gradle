@@ -109,6 +109,34 @@ dependencies {
 task gen << prepare_gen
 gen << apt_gen
 
-idea.module {
-    sourceDirs += file('src/gen/java')
+task gitignore << {
+    def pName = project.properties.group.tokenize('.')[0]
+    ant.echo ('preparing .gitignore file')
+    def gitignoreFile = $/
+# for java
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# for idea
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# dor gradle
+.gradle
+target/
+
+# for git
+.gitignore
+
+# for project
+/$
+    def contents = "${gitignoreFile}${pName}/\n"
+    new File('.gitignore').write(contents, 'UTF-8')
 }
