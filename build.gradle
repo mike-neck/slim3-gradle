@@ -1,4 +1,4 @@
-def langs = ['java', 'groovy']
+def langs = ['java']
 langs.each {
     apply plugin : it
 }
@@ -37,9 +37,6 @@ configurations {
     genModels
 }
 
-compileJava {
-    source = ['src/main/java', 'src/gen/java']
-}
 
 def encoding = { it.encoding = 'UTF-8'}
 
@@ -52,12 +49,29 @@ def makeStructure = {
         }
         dir << "src/${src.name}/resources"
     }
-    dir << "src/gen/java"
-    dir.each { 
+    dir.each {
         println it
         ant.mkdir(dir : it)
     }
 }
+
+def prepare_gen = {
+    def genDir = '.apt_gen'
+    if (new File(genDir).exists() == false)
+        ant.mkdir(dir: genDir)
+}
+
+def apt_gen = {
+    def genDir = '.apt_gen'
+    ant {
+        apt (srcdir : 'src/main/java',
+                destdir : genDir,
+                classpath : configurations.genModels.asPath,
+                debug : 'on',
+                compile : true)
+    }
+}
+
 
 tasks.ideaModule {
     doFirst makeStructure
@@ -78,7 +92,10 @@ dependencies {
     compile("org.slim3:slim3-gen:${slim3Version}".toString()) {
         exclude module: 'org.apache.ant:ant'
     }
-    genModels ("org.slim3:slim3-gen:${slim3Version}".toString())
+    prepare_gen()
+    compile files ('.apt_gen')
+    genModels "org.slim3:slim3:${slim3Version}".toString()
+    genModels "org.slim3:slim3-gen:${slim3Version}".toString()
     testCompile "${appengineGroupId}:appengine-api-stubs:${appengineVersion}".toString()
     testCompile "${appengineGroupId}:appengine-api-stubs:${appengineVersion}".toString()
     testCompile "${appengineGroupId}:appengine-local-runtime:1.3.6".toString()
@@ -89,14 +106,9 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-library:1.2.1'
 }
 
-task gen << {
-    ant {
-        apt (srcdir : 'src/main/java',
-                destdir : 'src/main/gen',
-                classpath : configurations.genModels.asPath,
-                debug : 'on',
-                compile : true,
-                factory : 'org.slim3.gen.processor.ModelProcessorFactory')
-    }
-}
+task gen << prepare_gen
+gen << apt_gen
 
+idea.module {
+    sourceDirs += file('src/gen/java')
+}
