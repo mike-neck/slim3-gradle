@@ -49,9 +49,27 @@ def makeStructure = {
         }
         dir << "src/${src.name}/resources"
     }
+    dir << project.properties.webAppDirName
+    dir << "${project.properties.webAppDirName}/WEB-INF"
     dir.each {
-        println it
-        ant.mkdir(dir : it)
+        if (new File(it).exists() == false) {
+            ant.echo it
+            ant.mkdir(dir : it)
+        }
+    }
+}
+
+def webXml = {
+    def webDesc = "${project.properties.webAppDirName}/WEB-INF/web.xml"
+    if ( new File(webDesc).exists() == false ) {
+        def writer = new StringWriter()
+        writer << '<?xml version="1.0" encoding="UTF-8"?>\n'
+        def xml = new groovy.xml.MarkupBuilder(writer)
+        xml."web-app" (xmlns : 'http://java.sun.com/xml/ns/javaee',
+            "xml:xsi" : 'http://www.w3.org/2001/XMLSchema-instance',
+            "xml:schemaLocation" : 'http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd',
+            version : 2.5, '')
+        new File(webDesc).write(writer.toString(), 'UTF-8')
     }
 }
 
@@ -75,6 +93,7 @@ def apt_gen = {
 
 tasks.ideaModule {
     doFirst makeStructure
+    doLast webXml
 }
 
 tasks.withType (AbstractCompile).each {
@@ -89,6 +108,7 @@ dependencies {
         exclude module: "${appengineGroupId}:appengine-api-1.0-sdk".toString()
         exclude module: "${appengineGroupId}:appengine-api-labs".toString()
     }
+    compile 'org.apache.geronimo.specs:geronimo-servlet_2.5_spec:1.2'
     compile("org.slim3:slim3-gen:${slim3Version}".toString()) {
         exclude module: 'org.apache.ant:ant'
     }
