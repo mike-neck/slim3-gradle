@@ -7,7 +7,7 @@ apply plugin : 'idea'
 apply plugin : 'war'
 
 group = 'org.mikeneck.gae.slim3.sample'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1.1-SNAPSHOT'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
@@ -131,6 +131,7 @@ gen << apt_gen
 
 task gitignore << {
     def pName = project.properties.group.tokenize('.')[0]
+    def extra = "!src/*/*/${pName}"
     ant.echo ('preparing .gitignore file')
     def gitignoreFile = $/
 # for java
@@ -157,6 +158,6 @@ target/
 
 # for project
 /$
-    def contents = "${gitignoreFile}${pName}/\n"
+    def contents = "${gitignoreFile}${pName}/\n${pName}"
     new File('.gitignore').write(contents, 'UTF-8')
 }
