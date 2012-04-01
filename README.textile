@@ -1,7 +1,7 @@
 h1. slim3-gradle 
 
-slim3-gradle is a sample project using gradle as build tool and slim3 as framework.
-Almost all of the project of slim3 products is built with Maen2. But this project aims to build slim3 project with gradle.
+Slim3-gradle is a sample project using gradle as build tool and slim3 as framework.
+Almost all of the project of slim3 products is built with Maven2 and Eclipse. But this project aims to build slim3 project with gradle and IntelliJ IDEA.
 
 h3. LICENSE
 
@@ -21,6 +21,41 @@ h3. LICENSE
    limitations under the License.
 </code></pre>
 
+
+h3. prepare for project
+
+* copy <code>build.gradle</code> to your project home.
+* modify the group name to your project's home package. the description is at around the line 9.
+<pre><code class="groovy">
+group = 'your.package.name'
+</code></pre>
+* then do this command for preparing IntelliJ IDEA environment.
+<pre><code class="sh">
+$ gradle idea
+</code></pre>
+* after the commands project's ipr file is so available that you can load project into IntelliJ IDEA.
+
+
+h3. using git
+
+* this project contains the feature for creating .gitignore file
+* the file is available via following command
+<pre><code class="sh">
+$ gradle gitignore
+</code></pre>
+* then you can find .gitignore file in your project home.
+
+
+h3. generating Meta class
+
+* this task creates Meta classes
+* do this command after creation of your model class
+<pre><code class="sh">
+$ gradle gen
+</code></pre>
+* then you can find Meta classes are available in IntelliJ IDEA.
+
+
 h3. how to build
 
 <pre><code class="sh">
@@ -28,4 +63,20 @@ $ cd /to/forked/path
 $ gradle install
 </code></pre>
 
+h3. The features
 
+h5. THE THINGS DONE
+
+* collect project dependencies
+* prepare project structure (half)
+* add apt-gen-model
+
+h5. THE THINGS TO DO
+
+* create web structure and its required files
+* add some other slim3's feature. like...
+** generate controllers and services
+** gwt
+** kotori-web-junit
+* packaging components
+* deploying archives
