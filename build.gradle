@@ -40,6 +40,14 @@ configurations {
     genModels
 }
 
+idea.project.ipr {
+    withXml { provider ->
+        def map = provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping
+        map.@vcs = 'Git'
+        map.@directory = project.properties.projectDir
+
+    }
+}
 
 def encoding = { it.encoding = 'UTF-8'}
 
@@ -149,35 +157,4 @@ dependencies {
 task gen << prepare_gen
 gen << apt_gen
 
-task gitignore << {
-    def pName = project.properties.group.tokenize('.')[0]
-    def extra = "!src/*/*/${pName}"
-    ant.echo ('preparing .gitignore file')
-    def gitignoreFile = $/
-# for java
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# for idea
-*.iml
-*.ipr
-*.iws
-.idea/
-out/
-
-# dor gradle
-.gradle
-target/
-
-# for git
-.gitignore
-
-# for project
-/$
-    def contents = "${gitignoreFile}${pName}/\n${pName}\n${extra}"
-    new File('.gitignore').write(contents, 'UTF-8')
-}
+task gitignore (type : GitIgnoreTask)
