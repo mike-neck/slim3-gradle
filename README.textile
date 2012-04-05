@@ -33,6 +33,10 @@ group = 'your.package.name'
 <pre><code class="sh">
 $ gradle idea
 </code></pre>
+* modify the application id and the application version.
+<pre><code class="groovy">def applicationId = 'your-application-id'
+def applicationVersion = '1'
+</code></pre>
 * after the commands project's ipr file is so available that you can load project into IntelliJ IDEA.
 
 

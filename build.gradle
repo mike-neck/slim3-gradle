@@ -15,6 +15,9 @@ def appengineGroupId = 'com.google.appengine'
 def appengineVersion = '1.6.2'
 def slim3Version = '1.0.15'
 
+def applicationId = 'application-id'
+def applicationVersion = '1'
+
 buildscript {
     repositories {
         maven {
@@ -73,6 +76,22 @@ def webXml = {
     }
 }
 
+def appengineXml = {
+    def path = "${project.properties.webAppDirName}/WEB-INF/appengine-web.xml"
+    if (new File(path).exists() == false) {
+        def writer = new StringWriter()
+        def xml = new groovy.xml.MarkupBuilder(writer)
+        xml.'appengine-web-app' (xmlns : 'http://appengine.google.com/ns/1.0') {
+            application (applicationId)
+            version_________ (applicationVersion)
+            'system-properties' {
+                property (name : 'java.util.logging.config.file', value : 'WEB-INF/logging.properties')
+            }
+        }
+        new File(path).write(writer.toString().replace('________', ''), 'UTF-8')
+    }
+}
+
 def prepare_gen = {
     def genDir = '.apt_gen'
     if (new File(genDir).exists() == false)
@@ -94,6 +113,7 @@ def apt_gen = {
 tasks.ideaModule {
     doFirst makeStructure
     doLast webXml
+    doLast appengineXml
 }
 
 tasks.withType (AbstractCompile).each {
