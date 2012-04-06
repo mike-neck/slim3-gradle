@@ -70,20 +70,6 @@ def makeStructure = {
     }
 }
 
-def webXml = {
-    def webDesc = "${project.properties.webAppDirName}/WEB-INF/web.xml"
-    if ( new File(webDesc).exists() == false ) {
-        def writer = new StringWriter()
-        writer << '<?xml version="1.0" encoding="UTF-8"?>\n'
-        def xml = new groovy.xml.MarkupBuilder(writer)
-        xml."web-app" (xmlns : 'http://java.sun.com/xml/ns/javaee',
-            "xml:xsi" : 'http://www.w3.org/2001/XMLSchema-instance',
-            "xml:schemaLocation" : 'http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd',
-            version : 2.5, '')
-        new File(webDesc).write(writer.toString(), 'UTF-8')
-    }
-}
-
 def appengineXml = {
     def path = "${project.properties.webAppDirName}/WEB-INF/appengine-web.xml"
     if (new File(path).exists() == false) {
@@ -120,7 +106,6 @@ def apt_gen = {
 
 tasks.ideaModule {
     doFirst makeStructure
-    doLast webXml
     doLast appengineXml
 }
 
@@ -158,3 +143,4 @@ task gen << prepare_gen
 gen << apt_gen
 
 task gitignore (type : GitIgnoreTask)
+task webXml (type: XmlTask)
