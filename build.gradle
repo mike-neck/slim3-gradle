@@ -82,7 +82,7 @@ def appengineXml = {
                 property (name : 'java.util.logging.config.file', value : 'WEB-INF/logging.properties')
             }
         }
-        new File(path).write(writer.toString().replace('________', ''), 'UTF-8')
+        new File(path).write(writer.toString().replace('_________', ''), 'UTF-8')
     }
 }
 
