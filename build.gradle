@@ -36,10 +36,6 @@ repositories {
     }
 }
 
-configurations {
-    genModels
-}
-
 idea.project.ipr {
     withXml { provider ->
         def map = provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping
@@ -97,7 +93,8 @@ def apt_gen = {
     ant {
         apt (srcdir : 'src/main/java',
                 destdir : genDir,
-                classpath : configurations.genModels.asPath,
+                classpath : configurations.compile.asPath,
+                encoding : 'UTF-8',
                 debug : 'on',
                 compile : true)
     }
@@ -127,8 +124,6 @@ dependencies {
     }
     prepare_gen()
     compile files ('.apt_gen')
-    genModels "org.slim3:slim3:${slim3Version}".toString()
-    genModels "org.slim3:slim3-gen:${slim3Version}".toString()
     testCompile "${appengineGroupId}:appengine-api-stubs:${appengineVersion}".toString()
     testCompile "${appengineGroupId}:appengine-api-stubs:${appengineVersion}".toString()
     testCompile "${appengineGroupId}:appengine-local-runtime:1.3.6".toString()
