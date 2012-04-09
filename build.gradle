@@ -7,7 +7,7 @@ apply plugin : 'idea'
 apply plugin : 'war'
 
 group = 'org.mikeneck.gae.slim3.sample'
-version = '0.0.1.1-SNAPSHOT-1'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
